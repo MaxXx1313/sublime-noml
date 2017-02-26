@@ -1,0 +1,114 @@
+%YAML 1.2
+---
+name: Noml (nomnoml)
+file_extensions:
+  - noml
+scope: source # comment.block
+contexts:
+  main:
+    - include: diagram_block
+    - include: directives_block
+
+  diagram_block:
+    - match: '(?<!\\)\['
+      scope: punctuation.section.brackets.begin
+      push:
+
+        # - match: '(?<!\\)\['
+        #   scope: invalid.illegal
+
+        - match: '(?<!\\)\]'
+          scope: punctuation.section.brackets.end
+          pop: true
+
+        - match: '(?<!\\)\|'
+          scope: keyword.operator  punctuation.separator.continuation
+          pop: true
+
+        # custom directives allowed
+        - match: '(?<=\[)(<)([\w]+)(>)'
+        # - match: '(?<=\[)(<)(abstract|instance|note|reference|package|frame|database|start|end|state|choice|input|sender|receiver|actor|usecase|label|hidden)(>)'
+          captures:
+            1: unctuation.definition.generic.begin
+            2: entity.name.type support.class
+            3: unctuation.definition.generic.end
+
+
+        - match: '<[\w]+>'
+          scope: invalid.illegal
+
+        - match: '.'
+          scope: entity.name
+
+
+    - match: '(?<!\\)(-/-|<?[+o:]?--?[+o:]?>?)'
+      scope: keyword.operator
+
+
+    - match: '\|'
+      scope: keyword.operator  punctuation.separator.continuation
+      # push: diagram_block
+
+    # - match: '(?<!\\)\]'
+    #   scope: invalid.illegal
+
+
+    # - match: '.'
+    #   scope: entity.name.label
+
+  directives_block:
+    - match: '^\s*(\#\.)'
+      scope: punctuation.definition.keyword
+      push:
+        - meta_scope: comment.line variable.parameter
+        # - match: \w+
+        - match: $
+          scope: meta.type
+          pop: true
+
+
+    - match: '^\s*(\#)'
+      scope: punctuation.definition.keyword
+      push:
+        - meta_scope: comment.line variable.parameter
+        # - match: \w+
+        - match: $
+          scope: meta.type
+          pop: true
+
+
+# <abstract> name]
+# [<instance> name]
+# [<note> name]
+# [<reference> name]
+# [<package> name]
+# [<frame> name]
+# [<database> name]
+# [<start> name]
+# [<end> name]
+# [<state> name]
+# [<choice> name]
+# [<input> name]
+# [<sender> name]
+# [<receiver> name]
+# [<actor> name]
+# [<usecase> name]
+# [<label> name]
+# [<hidden> name]
+
+#  -
+# association ->
+# association <->
+# dependency -->
+# dependency <-->
+# generalization -:>
+# generalization <:-
+# implementation --:>
+# implementation <:--
+# composition +-
+# composition +->
+# aggregation o-
+# aggregation o->
+# note --
+# hidden -/-
+
